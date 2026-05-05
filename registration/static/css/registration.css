@@ -1,0 +1,109 @@
+*{
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    transition: all 0.2s ease;
+}
+
+body{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #f4f6fb;
+    margin: 0;
+}
+
+header{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.registration-container{
+    width: 100%;
+    max-width: 380px;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+input{
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #2aabee;
+    box-shadow: 0 0 0 3px rgba(42,170,238,0.15);
+}
+
+input:not(:placeholder-shown):invalid {
+    border-color: #e5484d;
+}
+
+input:valid {
+    border-color: #22c55e;
+}
+
+button{
+    width: 100%;
+    padding: 12px;
+    background: #2aabee;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.05);
+    }
+
+p{
+    text-align: center;
+    font-size: 10px;
+    color: #9aa4b27c;
+    margin-top: 12px;
+}
+.or{
+    color: rgba(154, 164, 178, 0.911);
+}
+a{
+    text-align: center;
+    font-size: 10px;
+    color: #0040997c;
+}
+img{
+    cursor: pointer;
+}
+
+img:hover{
+    transform: scale(1.05);
+}
+
+h2{
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+}
+.login{
+    background: transparent;
+    color: #2aabee;
+    border: 1px solid #2aabee;
+}
+.login:hover{
+    transform: scale(1.05);
+    box-shadow: none;
+}
+
+.reg_error{
+    color: red;
+    font-size: 1.5vh;
+}
