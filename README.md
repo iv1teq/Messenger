@@ -1,3 +1,3 @@
 # WorldGramm 
 
-# Teamleads : [Mykhailo](https://github.com/DeKlain4ik) , [Viktor](https://github.com/iv1teq).
+# Teamleads :  [Viktor](https://github.com/iv1teq) , [Mykhailo](https://github.com/DeKlain4ik) .
