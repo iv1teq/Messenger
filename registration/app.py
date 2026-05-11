@@ -14,3 +14,4 @@ login_blueprint = flask.Blueprint(name = "login_blueprint",
                                         static_folder="static",
                                         template_folder="templates",
                                         static_url_path="/registration/static")
+
