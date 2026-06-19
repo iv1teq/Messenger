@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Registration</title>
+{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{{url_for('registration.static', filename = 'css/registration.css')}}">
+{% endblock %}
+
+{% block content %}
+
+
+<main>
+    <div class="world_it">
+        <img class="world_it" style="width: 40%;" src="{{ url_for('registration.static', filename='images/world_it.svg') }}" alt="123" >
+    </div>
+
+    <div class="create_new_accaount">
+        <a href="/auth" class="login">Увiйти</a>
+    </div>
+
+    <h2>Створити обліковий запис</h2>
+
+    <div class="registration-container">
+
+        <p class="field-label">Введіть вашу електронну пошту нижче, щоб створити обліковий запис</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST">
+            <input type="email" name="email" placeholder="name@example.com" required />
+
+            <p class="field-label">Задайте ваш пароль нижче, щоб створити обліковий запис</p>
+            <input type="password" name="password" placeholder="••••••••••••••" required minlength="8" />
+
+            <button type="submit">Надіслати код підтвердження</button>
+        </form>
+
+        <p class="terms">
+            Натискаючи «Продовжити», ви погоджуєтеся з нашими
+            <a href="">Умовами обслуговування</a> та <a href="">Політикою конфіденційності</a>.
+        </p>
+    </div>
+
+    <div class="illustration">
+        <img src="{{ url_for('registration.static', filename='images/people.jpg') }}" alt="123">
+    </div>
+</main>
+
+
+{% endblock %}

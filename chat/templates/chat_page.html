@@ -1,0 +1,408 @@
+
+{% extends 'base.html'%}
+
+{% block links %}
+<link rel="stylesheet" href="{{url_for('chat_page.static', filename = 'css/chat.css')}}">
+{% endblock %}
+
+{% block content %}
+
+<header class="chat-header">
+    <div class="header-left">
+        <div class="logo-area">
+            <img src="{{ url_for('chat_page.static', filename='images/chat_logo.png') }}" alt="Logo" class="chat-logo-img">
+            <span class="logo-text">Chat</span>
+        </div>
+    </div>
+
+    <div class="header-center">
+        
+    </div>
+
+    <div class="header-right">
+        <div class="user-controls">
+            <button class="control-btn notification-btn">
+                <img src="{{ url_for('chat_page.static', filename='images/notification.png') }}" alt="Notifications" class="header-icon">
+                <span class="badge"></span>
+            </button>
+            
+            <button class="control-btn" id="settings-btn">
+                <img src="{{ url_for('chat_page.static', filename='images/settings.png') }}" alt="Settings" class="header-icon">
+            </button>
+            
+            <div class="user-avatar" id="header_pp" style="background-color: rgb({{ user.color_r }}, {{ user.color_g }}, {{ user.color_b }});">
+                {{ (user.first_name[:1] if user.first_name else '') ~
+                    (user.last_name[:1] if user.last_name else '') }}
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+
+<main>
+    <div id="create_chat-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-window">
+        
+        <div class="modal-header">
+            <h2 class="modal-title">Створити чат</h2>
+            <button type="button" id="close_modal_x" class="close-x-btn">&times;</button>
+        </div>
+
+        <form method="POST" action="/chat/">
+            <input type="hidden" name="action" value="create_chat">
+            
+            <div class="input-group">
+                <label for="custom_group_name" class="input-label">Назва чату</label>
+                <input 
+                    type="text" 
+                    id="custom_group_name"
+                    name="custom_group_name" 
+                    placeholder="Введіть назву чату" 
+                    class="modal-input" 
+                    required
+                >
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="close_modal_btn" class="btn-cancel">Скасувати</button>
+                <button type="submit" class="btn-create">Створити</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+    <div id="chats-div" class="active">
+        
+        <div class="search-container">
+            <input type="text" id="chat-search" placeholder="Пошук чатів..." class="search-input">
+        </div>
+        
+        {% if not has_chat %}
+            <div class="make_chat_button">
+                <button class="create-chat-btn" id="open_modal_btn"> + Створити чат</button>
+            </div>
+            
+        {% endif %}
+
+        <div class="chat-header-container">
+            <h1 class="block-title main-title">Ваш чат</h1>
+        </div>
+
+        {% if has_chat and my_group.id %}
+            <div style="position: relative;">
+                
+                <a href="/chat/{{ my_group.id }}" class="chat-link" data-group-id="{{ my_group.id }}">
+                    <div class="your_chat owned-chat {% if active_chat and active_chat.id == my_group.id %}active-chat-style{% endif %}" style="padding-right: 60px;"> 
+                        <div class="group-avatar" style="background-color: rgb({{ my_group.color_r }}, {{ my_group.color_g }}, {{ my_group.color_b }});">
+                            {% if my_group.group_name %}{{ my_group.group_name[:2].upper() }}{% else %}CH{% endif %}
+                        </div>
+                        <div class="saved_messages_text">
+                            <div class="saved_time_text">
+                                <h1 class="chat-name-heading font-bold chat-title">{{ my_group.group_name }}</h1>
+                                <p id="saved_time">15m ago</p>
+                            </div>
+                            <p class="chat-subtext client-subtext">
+                                {% if my_group.last_message %}
+                                    {% if my_group.last_message.author %}
+                                        <strong>{{ my_group.last_message.author.username }}:</strong>
+                                    {% else %}
+                                        <strong>Удаленный пользователь:</strong>
+                                    {% endif %}
+                                    {{ my_group.last_message.content }}
+                                {% else %}
+                                    Нет сообщений
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <button class="delete-chat-btn" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); z-index: 10; background: none; border: none; cursor: pointer;">
+                    <img src="{{ url_for('chat_page.static', filename='images/delete.png') }}" class="delete-icon" alt="delete" style="width: 20px; height: 20px;">
+                </button>
+
+            </div>
+        {% else %}
+            <p class="empty-placeholder">У вас ще немає власного чату</p>
+        {% endif %}
+
+
+        <hr class="section-divider">
+
+
+        <div class="chat-header-container community-header">
+            <h1 class="block-title community-title">Чати спільноти</h1>
+        </div>
+
+        {% if other_groups %}
+            <div class="other-chats-list">
+                {% for group in other_groups %}
+                    <a href="/chat/{{ group.id }}" class="chat-link"  data-group-id="{{ group.id }}">
+                        <div class="your_chat {% if active_chat and active_chat.id == group.id %}active-chat-style{% endif %}">
+                            <div class="group-avatar" style="background-color: rgb({{ group.color_r }}, {{ group.color_g }}, {{ group.color_b }});">
+                                {% if group.group_name %}{{ group.group_name[:2].upper() }}{% else %}CH{% endif %}
+                            </div>
+                            
+                            <div class="saved_messages_text">
+                                <div class="saved_time_text">
+                                    <h1 class="chat-name-heading font-medium chat-title">{{ group.group_name }}</h1>
+                                    <p id="saved_time">2m ago</p>
+                                </div>
+                                <p class="chat-subtext">
+                                    {% if group.last_message %}
+                                        {% if group.last_message.author %}
+                                            <strong>{{ group.last_message.author.username }}:</strong>
+                                        {% else %}
+                                            <strong>Удаленный пользователь:</strong>
+                                        {% endif %}
+                                        {{ group.last_message.content }}
+                                    {% else %}
+                                        Нет сообщений
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-placeholder text-center">Інших чатів поки немає</p>
+        {% endif %}
+
+        <div id="delete-confirm-modal" class="settings-modal" style="display: none;">
+            <div class="settings-modal-content">
+                <h2>Видаление чату</h2>
+                <p>Ви впевнені, що хочете видалити свій чат? Цю дію неможливо буде скасувати.</p>
+                
+                <form method="POST" action="/chat/" id="delete-chat-form">
+                    <input type="hidden" name="action" value="delete_chat">
+                    <div class="modal-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn-delete-confirm" style="background-color: #e74c3c; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">Так, видалити</button>
+                        <button type="button" id="cancel-delete-btn" class="btn-cancel" style="padding: 8px 16px; border: 1px solid #ccc; border-radius: 6px; background-color: #fff; cursor: pointer;">Скасувати</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="messages-div">
+        {% if active_chat %}
+            
+            {% if need_to_join %}
+                <div class="join-chat-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px;">
+                    <div class="join-chat-card" style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 400px;">
+                        <div class="group-avatar-large" style="width: 60px; height: 60px; background: #3498db; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; font-weight: bold;">
+                            {{ active_chat.group_name[:2].upper() }}
+                        </div>
+                        <h2 style="margin-bottom: 10px; font-size: 22px; color: #333;">Вхід до спільноти</h2>
+                        <p style="color: #666; margin-bottom: 20px; font-size: 14px; line-height: 1.5;">
+                            Ви не є учасником чату <strong>{{ active_chat.group_name }}</strong>. Бажаєте приєднатися, щоб переглядати та надсилати повідомлення?
+                        </p>
+                        <form method="POST" action="/chat/{{ active_chat.id }}">
+                            <input type="hidden" name="action" value="join_group">
+                            <div style="display: flex; gap: 10px; justify-content: center;">
+                                <button type="submit" style="background-color: #2ecc71; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Приєднатися</button>
+                                <a href="/chat/" style="background-color: #eee; color: #333; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; display: flex; align-items: center;">Скасувати</a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            {% else %}
+                <div id="chat-messages-display">
+                    <header class="arrow-header">
+                        <img src="{{url_for('chat_page.static', filename='images/arrow.png')}}" alt="arrow" id="arrow-messages">
+                        <h1 id="group-name-link">
+                            {{active_chat.group_name}}
+                        </h1>
+                    </header>
+                    <p style="color: #aaa; text-align: center; font-size: 13px;">Це початок вашої історії повідомлень у чаті "{{ active_chat.group_name }}"</p>
+                    <div class="messages-list">
+                        {% if active_chat %}
+                        {% for msg in active_chat.messages %} 
+
+                            <div class="message-row {% if msg.user_id == user.id %}message-out{% else %}message-in{% endif %}">
+
+                                <!-- Аватар теперь для ВСЕХ сообщений -->
+                                <div class="msg-avatar" style="background-color: rgb({{ msg.author.color_r }}, {{ msg.author.color_g }}, {{ msg.author.color_b }});">
+                                    {% if msg.user_id == user.id %}{{ user.username[:1].upper() }}{% else %}{{ msg.author.username[:1].upper() }}{% endif %}
+                                </div>
+
+                                <div class="msg-bubble-wrapper">
+                                    <div class="msg-meta">
+                                        <span class="msg-username">
+                                            {% if msg.user_id == user.id %}You{% else %}{{ msg.author.username }}{% endif %}
+                                        </span>
+                                        <span class="msg-time">{{ msg.created_at.strftime('%H:%M') }}</span>
+                                    </div>
+                                    <span class="message-text">{{ msg.content }}</span>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                
+
+
+                <div class="input-wrapper" >
+                        <img src="{{ url_for('chat_page.static', filename='images/emoji.png') }}" alt="emoji" class="emoji-icon">
+                        <div class="input-field-container">
+                        <input class="message-input" type="text" id="message-input" placeholder="Введіть повідомлення...">
+                        </div>
+                        <button id="send-button">
+                            <img src="{{ url_for('chat_page.static', filename='images/send.png') }}" alt="Send" class="send-icon">
+                        </button>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="no-chat-selected" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #bbb;">
+                <p style="font-size: 16px;">Виберіть чат з лівого меню, щоб почати спілкування</p>
+            </div>
+        {% endif %}
+    
+    </div>
+    
+<!-- viktorrrrr -->
+    <div id="members-div">
+        <header class="arrow-header">
+            <img src="{{url_for('chat_page.static', filename='images/arrow.png')}}" alt="arrow" id="arrow-members">
+            <h1>Користувачі</h1>
+        </header>
+        <div class="members-count" style="margin-top: 1px; font-size: 14px; color: #666;">
+            
+        </div>
+            
+        
+    <div>
+        <div class="members-list">
+            
+        </div>
+    </div>
+
+    <div id="profile" style="display: none;">
+        <span class="cross" id="close-profile-btn">&times;</span>
+        <div class="user-avatar_bottom">
+            <div id="profile-letters"></div>
+        </div>
+        <span class="user-text" id="profile-fullname"></span>
+        <br>
+        <span class="username-text" id="profile-username"></span>
+    </div>
+
+        
+        
+    </div>
+</main>
+
+
+
+
+
+<!-- модальное окно -->
+<div id="settings-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Налаштування</h2>
+            <span class="close-modal-btn" id="close-modal-btn">&times;</span>
+        </div>
+        <div class="flex-container">
+    
+    
+        
+        <div class="modal-body">
+            
+            <div class="profile-image-section">
+                <h3>Зображення профілю</h3>
+                <div class="avatar-block" >
+                    <div class="avatar-circle" style="background-color: rgb({{ user.color_r }}, {{ user.color_g }}, {{ user.color_b }});">
+                        {{ (user.first_name[:1] if user.first_name else '') ~
+                            (user.last_name[:1] if user.last_name else '') }}
+                    </div>
+                    
+                    <div class="avatar-actions">
+                        <button type="button" class="btn-change">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            Змінити
+                        </button>
+                        <button type="button" class="btn-delete-photo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Видалити
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <form id="settings-form" method="POST">
+
+                <input type="hidden" name="action" value="update_profile">
+                
+                <div class="field-group">
+                    <label>Ім'я</label>
+                    <input type="text" name="first_name" value="{{ user.first_name or '' }}">
+                </div>
+
+                <div class="field-group">
+                    <label>Прізвище</label>
+                    <input type="text" name="last_name" value="{{ user.last_name or '' }}">
+                </div>
+
+                <div class="field-group">
+                    <label>Ім'я користувача</label>
+                    <input type="text" name="username" value="{{ user.username or '' }}">
+                </div>
+
+                <div class="field-group">
+                    <label>Стать</label>
+                    <div class="select-wrapper">
+                        <select name="gender">
+                            {% if user.gender == "male" %}
+                                <option value="female" >Жіноча</option>
+                                <option value="male" selected>Чоловіча</option>
+                            {% else %}
+                                <option value="female" selected>Жіноча</option>
+                                <option value="male">Чоловіча</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Вік</label>
+                    <input type="date" name="birth_date"
+                        value="{{ user.birth_date.strftime('%Y-%m-%d') if user.birth_date else '' }}">
+                </div>
+
+                <div class="delete-account-container">
+                    <button type="button" class="btn-delete-account">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Видалити аккаунт
+                    </button>
+                </div>
+
+            </form>
+        </div> <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="cancel-modal-btn">Скасувати</button>
+            <button type="submit" form="settings-form" class="btn-primary" id="save-modal-btn">Зберегти</button>
+        </div>
+
+</div>
+
+
+
+<script>
+    const CURRENT_USER_ID = {{ user.id }};
+</script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for('chat_page.static', filename='js/modal.js') }}"></script>
+{% endblock %}

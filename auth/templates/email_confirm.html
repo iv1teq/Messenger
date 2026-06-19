@@ -1,0 +1,31 @@
+{% extends 'base.html'%} 
+
+{%block links %}
+<link rel="stylesheet" href="{{url_for('registration.static', filename = 'css/registration.css')}}">
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="world_it">
+        <img class="world_it" style="width: 40%;" src="{{ url_for('registration.static', filename='images/world_it.svg') }}" alt="123" >
+    </div>
+
+    <div class="create_new_accaount">
+        <a href="/auth" class="login">Увiйти</a>
+    </div>
+
+    <h2>Успіх</h2>
+    
+    <div class="registration-container">
+        <h3>Ми надіслали вам електронний лист з магічним посиланням <br> для підтвердження вашого облікового запису. <br>
+    Будь ласка, перевірте свою поштову скриньку та натисніть на<br> посилання.</h3>
+        <a href="https://mail.google.com/mail/u/0/#inbox">
+            <button type="submit" >Відкрити електронну пошту</button>
+        </a>
+        <div class="illustration">
+            <img src="{{ url_for('registration.static', filename='images/people.jpg') }}" alt="123">
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,3 +1,3 @@
-# WorldGramm 
+# My own messanger on flask and socketio 
 
-# Teamleads :  [Viktor](https://github.com/iv1teq) , [Mykhailo](https://github.com/DeKlain4ik) .
+# Teamlead :  [Viktor](https://github.com/iv1teq) 
