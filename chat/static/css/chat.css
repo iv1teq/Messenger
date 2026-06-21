@@ -39,15 +39,16 @@ main {
     box-sizing: border-box;
 }
 
-/* Область с сообщениями: занимает всё доступное место и скроллится */
+
+
+/* чтобы скроллились только сообщения */
 #chat-messages-display {
     flex: 1;
-    min-height: 0; /* критично для появления скролла внутри flex-контейнера */
+    min-height: 0;
     overflow-y: auto;
-    padding: 10px;
+    padding: 0 10px 10px;
     box-sizing: border-box;
 }
-
 #members-div {
     gap: 0;
     border: 1.7px solid rgba(90, 90, 90, 0.075);
@@ -166,9 +167,24 @@ main {
     flex-direction: row;
     gap: 10px;
     padding-left: 25px;
+    align-items: center;
 }
 
+.your_chat .group-avatar {
+    flex-shrink: 0;
+}
 
+.your_chat .saved_messages_text {
+    min-width: 0;
+    flex: 1;
+}
+
+.your_chat .chat-name-heading,
+.your_chat .chat-subtext {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 
 .saved_messages {
@@ -644,10 +660,15 @@ main {
     border-top: 1px solid #eaeaea;
     margin: 20px 0;
 }
-
+.soft-divider {
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin: 20px 0;
+}
 /* Специфические стили для карточки личного чата */
 .owned-chat {
     margin-bottom: 20px;
+    margin-top: 10px;
 }
 
 .chat-name-heading {
@@ -1016,8 +1037,68 @@ main {
     margin-left: auto;
     margin-right: auto;
 }
+.profile-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 6px auto 0;
+    gap: 4px;
+    font-size: 13px;
+    color: #4b5563;
+    text-align: center;
+}
+.profile-label {
+    color: #9ca3af;
+}
+.profile-value {
+    font-weight: 600;
+    color: #111827;
+}
 #profile {
     display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 16px 0;
+}
+.user-text {
+    display: block;
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    width: 100%;
+}
+.username-text {
+    display: block;
+    margin: 4px 0 0;
+    text-align: center;
+    color: #008cff;
+    width: 100%;
+}
+.profile-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 280px;
+    margin: 8px 0 0;
+    gap: 4px;
+    font-size: 13px;
+    color: #4b5563;
+    text-align: left;
+}
+.profile-label {
+    color: #9ca3af;
+}
+.profile-value {
+    font-weight: 600;
+    color: #111827;
 }
 .active-profile {
     display: flex;
@@ -1039,13 +1120,12 @@ main {
     transform: translateY(30px); /* вверх */
 
 }
-.arrow-header{
-    display:flex;
-    width: 100%;
-    flex-direction: row;
-    font-size:15px;
-    gap:10px;
 
+#group-name-link {
+    margin-top: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .group-avatar {
@@ -1086,4 +1166,64 @@ main {
         display: flex;
     }
 
+}
+.emoji-icon {
+    cursor: pointer;
+}
+
+.emoji-panel {
+    display: none;
+    position: absolute;
+    bottom: 110%;
+    left: 0;
+    width: 300px;
+    max-height: 240px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 8px;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.emoji-panel.show {
+    display: grid;
+}
+
+.emoji-panel button {
+    border: none;
+    background: transparent;
+    font-size: 19px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    line-height: 1;
+}
+
+.emoji-panel button:hover {
+    background: #f0f0f0;
+}
+.arrow-header {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    font-size: 15px;
+    gap: 10px;
+    width: 100%;
+}
+
+.chat-divider{
+    position: sticky;
+    top: 58px;
+    z-index: 19;
+
+    width: 100%;
+    margin: 0 0 16px 0;
+
+    border: none;
+    border-top: 2px solid rgba(0,0,0,.12);
+    background: #fff;
 }

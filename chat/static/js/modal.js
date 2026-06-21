@@ -328,34 +328,37 @@ document.addEventListener('DOMContentLoaded', function () {
     if (closeModalBtnSettings) closeModalBtnSettings.addEventListener('click', closeSettings);
 
 
-    // 8. КЛИК ПО УЧАСТНИКАМ (ПРОФИЛЬ ВНИЗУ)
+    // 8. КЛИК ПО УЧАСТНИКАМ (ДЕЛЕГИРОВАНИЕ СОБЫТИЙ — карточки рендерятся динамически)
 
-    const members = document.querySelectorAll('.member');
+    const membersList = document.querySelector('.members-list');
     const profileBlock = document.getElementById('profile');
-    
+
     const profileLetters = document.getElementById('profile-letters');
     const profileFullname = document.getElementById('profile-fullname');
     const profileUsername = document.getElementById('profile-username');
     const closeBtn = document.getElementById('close-profile-btn');
 
-    members.forEach(member => {
-        member.addEventListener('click', () => {
+    if (membersList) {
+        membersList.addEventListener('click', (event) => {
+            const member = event.target.closest('.member');
+            if (!member) return;
+
             const username = member.getAttribute('data-username');
             const fullname = member.getAttribute('data-fullname');
             const initials = member.getAttribute('data-initials');
 
             if (profileLetters) profileLetters.textContent = initials || 'CH';
-            if (profileFullname) profileFullname.textContent = fullname.trim() ? fullname : 'Без имени';
+            if (profileFullname) profileFullname.textContent = fullname && fullname.trim() ? fullname : 'Без імені';
             if (profileUsername) profileUsername.textContent = `@${username}`;
 
-            if (profileBlock) profileBlock.style.display = 'flex'; 
+            if (profileBlock) profileBlock.style.display = 'flex';
         });
-    });
+    }
 
     if (closeBtn && profileBlock) {
         closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            profileBlock.style.display = 'none'; 
+            e.stopPropagation();
+            profileBlock.style.display = 'none';
         });
     }
 });

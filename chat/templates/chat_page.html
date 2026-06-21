@@ -133,7 +133,7 @@
         {% endif %}
 
 
-        <hr class="section-divider">
+        <hr class="soft-divider">
 
 
         <div class="chat-header-container community-header">
@@ -199,7 +199,7 @@
                 <div class="join-chat-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px;">
                     <div class="join-chat-card" style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 400px;">
                         <div class="group-avatar-large" style="width: 60px; height: 60px; background: #3498db; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; font-weight: bold;">
-                            {{ active_chat.group_name[:2].upper() }}
+                            {{ (active_chat.group_name or 'CH')[:2].upper() }}
                         </div>
                         <h2 style="margin-bottom: 10px; font-size: 22px; color: #333;">Вхід до спільноти</h2>
                         <p style="color: #666; margin-bottom: 20px; font-size: 14px; line-height: 1.5;">
@@ -223,7 +223,13 @@
                             {{active_chat.group_name}}
                         </h1>
                     </header>
-                    <p style="color: #aaa; text-align: center; font-size: 13px;">Це початок вашої історії повідомлень у чаті "{{ active_chat.group_name }}"</p>
+
+                    <hr class="chat-divider">
+
+                    <p style="color: #aaa; text-align: center; font-size: 13px;">
+                        Це початок вашої історії повідомлень у чаті "{{ active_chat.group_name }}"
+                    </p>
+
                     <div class="messages-list">
                         {% if active_chat %}
                         {% for msg in active_chat.messages %} 
@@ -232,7 +238,7 @@
 
                                 <!-- Аватар теперь для ВСЕХ сообщений -->
                                 <div class="msg-avatar" style="background-color: rgb({{ msg.author.color_r }}, {{ msg.author.color_g }}, {{ msg.author.color_b }});">
-                                    {% if msg.user_id == user.id %}{{ user.username[:1].upper() }}{% else %}{{ msg.author.username[:1].upper() }}{% endif %}
+                                    {% if msg.user_id == user.id %}{{ (user.username or '?')[:1].upper() }}{% else %}{{ (msg.author.username or '?')[:1].upper() }}{% endif %}
                                 </div>
 
                                 <div class="msg-bubble-wrapper">
@@ -253,14 +259,15 @@
                 
 
 
-                <div class="input-wrapper" >
-                        <img src="{{ url_for('chat_page.static', filename='images/emoji.png') }}" alt="emoji" class="emoji-icon">
-                        <div class="input-field-container">
-                        <input class="message-input" type="text" id="message-input" placeholder="Введіть повідомлення...">
-                        </div>
-                        <button id="send-button">
-                            <img src="{{ url_for('chat_page.static', filename='images/send.png') }}" alt="Send" class="send-icon">
-                        </button>
+                <div class="input-wrapper" style="position: relative;">
+                    <img src="{{ url_for('chat_page.static', filename='images/emoji.png') }}" alt="emoji" class="emoji-icon" id="emoji-icon">
+                    <div id="emoji-panel" class="emoji-panel"></div>
+                    <div class="input-field-container">
+                    <input class="message-input" type="text" id="message-input" placeholder="Введіть повідомлення...">
+                    </div>
+                    <button id="send-button">
+                        <img src="{{ url_for('chat_page.static', filename='images/send.png') }}" alt="Send" class="send-icon">
+                    </button>
                 </div>
             {% endif %}
 
@@ -278,6 +285,7 @@
             <img src="{{url_for('chat_page.static', filename='images/arrow.png')}}" alt="arrow" id="arrow-members">
             <h1>Користувачі</h1>
         </header>
+        <hr class="soft-divider">
         <div class="members-count" style="margin-top: 1px; font-size: 14px; color: #666;">
             
         </div>
@@ -290,13 +298,23 @@
     </div>
 
     <div id="profile" style="display: none;">
-        <span class="cross" id="close-profile-btn">&times;</span>
+        <button class="cross" id="close-profile-btn" aria-label="Закрыть">&times;</button>
+
         <div class="user-avatar_bottom">
             <div id="profile-letters"></div>
         </div>
+
         <span class="user-text" id="profile-fullname"></span>
-        <br>
         <span class="username-text" id="profile-username"></span>
+
+        <div class="profile-row">
+            <span class="profile-label">Дата народження</span>
+            <span class="profile-value" id="profile-birth-date"></span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Стать</span>
+            <span class="profile-value" id="profile-gender"></span>
+        </div>
     </div>
 
         
