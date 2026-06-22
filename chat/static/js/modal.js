@@ -37,12 +37,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const avatarDiv = document.createElement('div');
             avatarDiv.classList.add('members-avatar');
-            avatarDiv.style.backgroundColor = `rgb(${member.color_r}, ${member.color_g}, ${member.color_b})`;
-            avatarDiv.style.position = 'relative';
+            avatarDiv.style.backgroundColor =
+                `rgb(${member.color_r}, ${member.color_g}, ${member.color_b})`;
 
-            const lettersDiv = document.createElement('div');
-            lettersDiv.textContent = memberDiv.dataset.initials || (member.username || '?').slice(0, 1).toUpperCase();
-            avatarDiv.appendChild(lettersDiv);
+            if (member.avatar) {
+                avatarDiv.innerHTML = `
+                    <img src="${member.avatar}"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                `;
+            } else {
+                const lettersDiv = document.createElement('div');
+                lettersDiv.textContent =
+                    memberDiv.dataset.initials ||
+                    (member.username || '?').charAt(0).toUpperCase();
+
+                avatarDiv.appendChild(lettersDiv);
+            }
 
             if (member.status === 'online') {
                 const statusDiv = document.createElement('div');
@@ -106,8 +116,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const avatar = document.createElement('div');
             avatar.classList.add('msg-avatar');
-            avatar.style.backgroundColor = `rgb(${data.color_r || 128}, ${data.color_g || 128}, ${data.color_b || 128})`;
-            avatar.textContent = (data.username || '?').slice(0, 1).toUpperCase();
+
+            avatar.style.backgroundColor =
+                `rgb(${data.color_r || 128},
+                    ${data.color_g || 128},
+                    ${data.color_b || 128})`;
+
+            if (data.avatar) {
+                avatar.innerHTML = `
+                    <img src="${data.avatar}"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                `;
+            } else {
+                avatar.textContent =
+                    (data.username || '?').slice(0,1).toUpperCase();
+            }
 
             const wrapper = document.createElement('div');
             wrapper.classList.add('msg-bubble-wrapper');
@@ -566,5 +589,30 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+    const deleteAccountBtn = document.querySelector('.btn-delete-account');
 
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', () => {
+            if (!confirm('Удалить аккаунт? Это действие необратимо')) return;
+
+            const fd = new FormData();
+            fd.append('action', 'delete_account');
+
+            fetch('/chat/', {
+                method: 'POST',
+                body: fd
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/registration';
+                } else {
+                    alert(data.error || 'Ошибка удаления аккаунта');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        });
+    }
 }); // Кінець DOMContentLoaded

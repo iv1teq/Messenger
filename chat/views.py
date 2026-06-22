@@ -51,10 +51,18 @@ def handle_chat_page(chat_id=None):
                 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
                 filepath = os.path.join(UPLOAD_FOLDER, filename)
                 file.save(filepath)
+                import time
+            
                 avatar_url = f"/chat/static/avatars/{filename}"
+
                 flask_login.current_user.avatar = avatar_url
+
                 DATABASE.session.commit()
-                return flask.jsonify({'success': True, 'avatar_url': avatar_url})
+
+                return flask.jsonify({
+                    'success': True,
+                    'avatar_url': f"{avatar_url}?v={int(time.time())}"
+                })
 
         # Видалення аватара
         elif action == "delete_avatar":
@@ -175,7 +183,28 @@ def handle_chat_page(chat_id=None):
                 DATABASE.session.rollback()
                 print(f"[delete_chat ERROR] {e}")
                 return flask.jsonify({'success': False, 'error': 'Помилка сервера при видаленні чату'}), 500
+        elif action == "delete_account":
+            try:
+                user = flask_login.current_user
 
+                # (важно) сначала удалить связи many-to-many
+                user.groups.clear()  # если у тебя связь User <-> Groups
+                # Message.query.filter_by(user_id=user.id).delete()
+                # UserGroup.query.filter_by(user_id=user.id).delete()
+
+                # DATABASE.session.delete(user)
+                # DATABASE.session.commit()
+                # удалить самого пользователя
+                DATABASE.session.delete(user)
+                DATABASE.session.commit()
+
+                flask_login.logout_user()
+
+                return flask.jsonify({'success': True})
+
+            except Exception as e:
+                DATABASE.session.rollback()
+                return flask.jsonify({'success': False, 'error': str(e)}), 500
     # GET-запит — формування даних для шаблону
     current_user_id = int(flask_login.current_user.id)
     my_group = Groups.query.filter_by(owner_id=current_user_id).first()

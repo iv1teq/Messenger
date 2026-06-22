@@ -20,7 +20,12 @@ class User(DATABASE.Model, flask_login.UserMixin):
     color_r = DATABASE.Column(DATABASE.Integer, default=0)
     color_g = DATABASE.Column(DATABASE.Integer, default=0)
     color_b = DATABASE.Column(DATABASE.Integer, default=255)
-    groups = DATABASE.relationship("Groups", secondary="user_group", back_populates="users")
+    groups = DATABASE.relationship(
+    "Groups",
+    secondary="user_group",
+    back_populates="users",
+    cascade="all, delete"
+)
     avatar = DATABASE.Column(DATABASE.String(255), nullable=True, default=None)
 
 
@@ -34,7 +39,12 @@ class Groups(DATABASE.Model):
     owner = DATABASE.relationship("User")
 
     users = DATABASE.relationship("User", secondary="user_group", back_populates="groups")
-    messages = DATABASE.relationship("Message", back_populates="groups", cascade="all, delete-orphan")
+    messages = DATABASE.relationship(
+    "Message",
+    back_populates="groups",
+    cascade="all, delete-orphan",
+    passive_deletes=True
+)
     color_r = DATABASE.Column(DATABASE.Integer, default=0)
     color_g = DATABASE.Column(DATABASE.Integer, default=0)
     color_b = DATABASE.Column(DATABASE.Integer, default=255)
@@ -70,6 +80,16 @@ class Message(DATABASE.Model):
     group_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey('groups.id'), nullable=False)
 
     groups = DATABASE.relationship('Groups', back_populates='messages')
-    user_id = DATABASE.Column(DATABASE.Integer, DATABASE.ForeignKey("user.id"), nullable = False)
-    author = DATABASE.relationship("User", backref = "message")
+    user_id = DATABASE.Column(
+    DATABASE.Integer,
+    DATABASE.ForeignKey("user.id", ondelete="CASCADE"),
+    nullable=False
+)
+    author = DATABASE.relationship(
+    "User",
+    backref=DATABASE.backref(
+        "messages",
+        cascade="all, delete-orphan"
+    )
+)
     created_at = DATABASE.Column(DATABASE.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
