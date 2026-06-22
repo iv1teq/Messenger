@@ -21,6 +21,7 @@ class User(DATABASE.Model, flask_login.UserMixin):
     color_g = DATABASE.Column(DATABASE.Integer, default=0)
     color_b = DATABASE.Column(DATABASE.Integer, default=255)
     groups = DATABASE.relationship("Groups", secondary="user_group", back_populates="users")
+    avatar = DATABASE.Column(DATABASE.String(255), nullable=True, default=None)
 
 
 class Groups(DATABASE.Model):

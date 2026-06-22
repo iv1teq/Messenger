@@ -1,32 +1,81 @@
-# Virtual environments
-env/
-venv/
-ENV/
+# ===== Environment & secrets =====
+.env
+.env.*
+!.env.example
+*.cfg
+secrets.json
+config_local.py
 
-# Python cache
+# ===== Python =====
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
 
-# Flask / app folders inside project
-app/instance/
-app/migrations/
+# ===== Virtual environments =====
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-# If instance/migrations are anywhere (на всякий случай)
+# ===== Databases =====
+*.db
+*.sqlite
+*.sqlite3
 instance/
-migrations/
+*.db-journal
 
-# Environment variables file
-.env
+# ===== Flask =====
+.flaskenv
+flask_session/
 
-# IDE
+# ===== Migrations (за бажанням, якщо не хочеш версіонувати) =====
+# migrations/
+
+# ===== User uploads / avatars =====
+chat_page/static/avatars/*
+!chat_page/static/avatars/.gitkeep
+static/avatars/*
+!static/avatars/.gitkeep
+
+# ===== Distribution / packaging =====
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# ===== Unit tests / coverage =====
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+
+# ===== IDE / Editors =====
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# OS files
+# ===== OS-specific =====
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs
+# ===== Logs =====
 *.log
+logs/
 
+# ===== Node (якщо колись зʼявиться фронтенд-тулчейн) =====
+node_modules/
+npm-debug.log*
+
+# ===== Jupyter (якщо будуть ноутбуки для аналізу) =====
+.ipynb_checkpoints/

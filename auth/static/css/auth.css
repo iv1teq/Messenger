@@ -209,4 +209,8 @@ button[type="submit"]:hover {
     h2 {
         font-size: 20px;
     }
+
+    .create_new_accaount a {
+        top: 1px;
+    }
 }

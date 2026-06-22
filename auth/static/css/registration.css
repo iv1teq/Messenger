@@ -236,4 +236,8 @@ button[type="submit"]:hover {
     h2 {
         font-size: 20px;
     }
+
+    .btn-login {
+        top: 20px;
+    }
 }
