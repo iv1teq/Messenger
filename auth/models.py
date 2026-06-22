@@ -1,7 +1,7 @@
 from app.database import DATABASE
 import flask_login
 import datetime
-
+import secrets
 
 
 class User(DATABASE.Model, flask_login.UserMixin):
@@ -93,3 +93,23 @@ class Message(DATABASE.Model):
     )
 )
     created_at = DATABASE.Column(DATABASE.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
+
+class PendingRegistration(DATABASE.Model):
+    """
+    Временная запись регистрации. Хранит email и password_hash до того,
+    как пользователь подтвердит почту по ссылке с токеном.
+    Реальный User создаётся только в confirm_email_view.
+    """
+    __tablename__ = 'pending_registration'
+
+    id = DATABASE.Column(DATABASE.Integer, primary_key=True)
+    email = DATABASE.Column(DATABASE.String, unique=True, nullable=False)
+    password_hash = DATABASE.Column(DATABASE.String, nullable=False)
+    token = DATABASE.Column(DATABASE.String(64), unique=True, nullable=False, default=lambda: secrets.token_urlsafe(32))
+    created_at = DATABASE.Column(DATABASE.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
+
+    def is_expired(self, ttl_minutes=60):
+        created = self.created_at
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=datetime.timezone.utc)
+        return datetime.datetime.now(datetime.timezone.utc) - created > datetime.timedelta(minutes=ttl_minutes)
